@@ -1,33 +1,20 @@
 import "./initial.css"
 import './App.css';
-import {useEffect, useState} from "react";
+import {useState} from "react";
 import produce from "immer";
+import {LogList} from "./component/LogList";
+import {MapLine} from "./component/MapLine";
+import {MapCell} from "./component/MapCell";
+
+export const emptyArray = Array(19).fill(0)
+export function getTowDomEmptyArray() {
+  return Array(19).fill(Array(19).fill(0))
+}
 
 function App() {
-  const [map, setMap] = useState(Array(19).fill(Array(19).fill(0)))
+  const [map, setMap] = useState(getTowDomEmptyArray())
   const [turn, setTurn] = useState(1)
-
-  const cellStyle = {
-    width: 30,
-    height: 30,
-    fontSize: 7,
-  }
-  const lineStyle = {
-    stroke: 2
-  }
-
-  const Cell = ({x, y, value, ...rest}) => {
-    return (
-      <div
-        style={cellStyle}
-        className="cell"
-        {...rest}
-      >
-        <div
-          className={value === 0 ? "none" : value === 1 ? "black" : "white"}></div>
-      </div>
-    )
-  }
+  const [log, setLog] = useState([])
 
   const handleCellClick = (x, y, player) => {
     if (map[y][x] !== 0)
@@ -38,61 +25,22 @@ function App() {
     }))
   }
 
-  const [log, setLog] = useState([])
-
   return (
     <div className="App">
       <div className="go-wrap">
-        <div className="cell-wrap">
-          {map.map((row, y) => (
-            <>
-              {row.map((col, x) => (
-                <Cell
-                  key={x} x={x} y={y} value={col}
-                  onClick={() => handleCellClick(x, y, turn)}/>
-              ))}
-            </>
-          ))}
-        </div>
-
-        <div className="line-wrap">
-          {Array(19).fill(0).map((_, x) => (
-            <div
-              key={x}
-              style={{
-                width: cellStyle.width * 18 + lineStyle.stroke,
-                height: lineStyle.stroke,
-                backgroundColor: "#000",
-                top: cellStyle.height * x + cellStyle.height / 2,
-                left: cellStyle.width / 2
-              }}></div>
-          ))}
-          {Array(19).fill(0).map((_, x) => (
-            <div
-              key={x}
-              style={{
-                width: lineStyle.stroke,
-                height: cellStyle.height * 18 + lineStyle.stroke,
-                backgroundColor: "#000",
-                top: cellStyle.height / 2,
-                left: cellStyle.width * x + cellStyle.width / 2
-              }}></div>
-          ))}
-        </div>
+        <MapCell map={map} handleCellClick={handleCellClick} turn={turn}/>
+        <MapLine/>
       </div>
       <button onClick={() => {
-        setMap(Array(19).fill(Array(19).fill(0)))
-        setTurn(0)
+        setMap(getTowDomEmptyArray())
+        // setTurn(1)
         setLog([])
-      }}>리셋</button>
+      }}>리셋
+      </button>
 
-      <button onClick={() => {setTurn(1)}}>흑</button>
-      <button onClick={() => {setTurn(2)}}>백</button>
-      <ul>
-        {log.map((i, index) => (
-          <li>{index}. {i}</li>
-        ))}
-      </ul>
+      <button onClick={() => setTurn(1)}>흑</button>
+      <button onClick={() => setTurn(2)}>백</button>
+      <LogList log={log}/>
     </div>
   );
 }

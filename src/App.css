@@ -18,7 +18,9 @@
 .cell {
   background-color : #fc8527;
 
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .cell > div {
@@ -26,11 +28,8 @@
   height: 85%;
   border-radius: 100%;
 
-  position: absolute;
-  top : 50%;
-  left : 50%;
+  position: relative;
   z-index: 2;
-  transform: translate(-50%, -50%);
 }
 
 .cell .white {
