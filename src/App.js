@@ -1,41 +1,7 @@
 import "./initial.css"
 import './App.css';
 import {useEffect, useState} from "react";
-
-let _bfs = Array(19).fill(Array(19).fill(0))
-const bfs = (x, y, map) => {
-  if(_bfs[y][x] === 1)
-    return
-  _bfs[y][x] = 1
-
-  console.log("bfs", x, y)
-
-  for(let dy = -1; dy <= 1; dy += 1){
-    for(let dx = -1; dx <= 1; dx += 1){
-      if(Math.abs(dx + dy) !== 1)
-        continue
-
-
-      const [nx, ny] = [x + dx, y + dy]
-      if(nx < 0 || nx >= 19 || ny < 0 || ny >= 19)
-        continue
-
-      console.log(nx, ny, "체크")
-
-      if(map[ny][nx] === 0){
-        console.log("비었음")
-        return true
-      }
-
-      if(map[ny][nx] === map[y][x] && bfs(nx, ny, map)){
-        console.log("같은편인데 비었음")
-        return true
-      }
-    }
-  }
-
-  return false
-}
+import produce from "immer";
 
 function App() {
   const [map, setMap] = useState(Array(19).fill(Array(19).fill(0)))
@@ -48,11 +14,6 @@ function App() {
   }
   const lineStyle = {
     stroke: 2
-  }
-  const pointStyle = {
-    width: 10,
-    height: 10,
-    borderRadius: "100%"
   }
 
   const Cell = ({x, y, value, ...rest}) => {
@@ -72,26 +33,9 @@ function App() {
     if (map[y][x] !== 0)
       return
 
-    let newMap = map.map(row => [...row])
-    newMap[y][x] = player
-
-    for(let y = 0; y < 19; y++){
-      for(let x = 0; x < 19; x++){
-        if(newMap[y][x] === 0)
-          continue
-
-        _bfs = Array(19).fill(Array(19).fill(0))
-        if(!bfs(x, y, newMap)){
-          if(newMap[y][x] === 1)
-            setLog([...log, "흑 잡음"])
-          if(newMap[y][x] === 2)
-            setLog([...log, "백 잡음"])
-          newMap[y][x] = 0
-        }
-      }
-    }
-    setMap(newMap)
-    // setTurn(turn + 1)
+    setMap(produce(map, draft => {
+      draft[y][x] = player
+    }))
   }
 
   const [log, setLog] = useState([])
@@ -104,13 +48,8 @@ function App() {
             <>
               {row.map((col, x) => (
                 <Cell
-                  key={x}
-                  x={x}
-                  y={y}
-                  value={col}
-                  onClick={() => {
-                    handleCellClick(x, y, turn)
-                  }}/>
+                  key={x} x={x} y={y} value={col}
+                  onClick={() => handleCellClick(x, y, turn)}/>
               ))}
             </>
           ))}
