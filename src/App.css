@@ -41,8 +41,13 @@
   background-color: #000;
 }
 
+.cell .none {
+  opacity: 0;
+  background-color: #f00;
+}
+
 .cell:hover .none {
-  background-color: rgba(7, 29, 128, 0.47);
+  opacity: 0.5;
 }
 
 .line-wrap {
